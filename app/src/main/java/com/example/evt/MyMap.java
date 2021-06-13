@@ -11,6 +11,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 
 import com.example.evt.databinding.ActivityMapBinding;
@@ -39,6 +41,7 @@ public class MyMap extends AppCompatActivity implements OnMapReadyCallback, Loca
 
     private GoogleMap mMap;
     private ActivityMapBinding binding;
+    View mapView;
 
     SupportMapFragment mapFragment;
     FusedLocationProviderClient client;
@@ -59,6 +62,7 @@ public class MyMap extends AppCompatActivity implements OnMapReadyCallback, Loca
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mapView = mapFragment.getView();
 
         client = LocationServices.getFusedLocationProviderClient(this);
         Dexter.withContext(getApplicationContext())
@@ -135,8 +139,6 @@ public class MyMap extends AppCompatActivity implements OnMapReadyCallback, Loca
                     @Override
                     public void onMapReady(GoogleMap googleMap) {
                         currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,15));
                     }
                 }));
@@ -153,6 +155,19 @@ public class MyMap extends AppCompatActivity implements OnMapReadyCallback, Loca
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        if (mapView != null &&
+                mapView.findViewById(Integer.parseInt("1")) != null) {
+            // Get the button view
+            View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+            // and next place it, on bottom right (as Google Maps app)
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
+                    locationButton.getLayoutParams();
+            // position on right bottom
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+            layoutParams.setMargins(0, 0, 30, 30);
+        }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
